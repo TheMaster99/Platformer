@@ -10,6 +10,10 @@ void close();
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
 
+bool quit = false;
+
+SDL_Event e;
+
 SDL_Window* gWindow = NULL;
 SDL_Surface* gScreenSurface = NULL;
 SDL_Surface* gSplash = NULL;
@@ -76,24 +80,47 @@ int main(int argc, char* args[])
 		{
 			printf("Failed to load media!\n");
 		}
-		else
-		{
-			Vector2f v1 = { 0,6 };
-			Vector2f v2 = { 5,3 };
-			v1 += v2;
-			
-			if (v1.y == 9)
-			{
-				splash.draw(gScreenSurface);
-
-				SDL_UpdateWindowSurface(gWindow);
-			}
-
-			SDL_Delay(10000);
-		}
 	}
 
-	close();
+	while (!quit)
+	{
+		SDL_FillRect(gScreenSurface, NULL, 0x000000);
+		while (SDL_PollEvent(&e) != 0)
+		{
+			if (e.type == SDL_QUIT)
+				quit = true;
+			else if (e.type == SDL_KEYDOWN)
+			{
+				switch (e.key.keysym.sym)
+				{
+				case SDLK_w:
+					splash.move(Vector2f{ 0, 0 });
+					break;
+				case SDLK_SPACE:
+					splash.move(Vector2f{ SCREEN_WIDTH / 2 - 360, 0 });
+					break;
+				case SDLK_s:
+					splash.move(Vector2f{ SCREEN_WIDTH - 720, 0 });
+					break;
+				case SDLK_a:
+					splash.move(Vector2f{ splash.getPosition().x - 5, 0 });
+					break;
+				case SDLK_d:
+					splash.move(Vector2f{ splash.getPosition().x + 5, 0 });
+					break;
+				case SDLK_ESCAPE:
+					quit = true;
+					break;
+				}
+			}
+		}
 
-	return 0;
+		splash.draw(gScreenSurface);
+
+		SDL_UpdateWindowSurface(gWindow);
+	}
+
+		close();
+
+		return 0;
 }

@@ -12,6 +12,8 @@ public:
 
 	void move(Vector2f pos);
 
+	Vector2f getPosition();
+
 	bool init(const char* resourcePath);
 	bool init(const char* resourcePath, Vector2f pos);
 

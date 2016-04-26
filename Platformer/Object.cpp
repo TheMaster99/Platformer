@@ -57,6 +57,11 @@ void Object::move(Vector2f pos)
 	}
 }
 
+Vector2f Object::getPosition()
+{
+	return position;
+}
+
 void Object::draw(SDL_Surface* gameSurface)
 {
 	SDL_BlitSurface(sprite, NULL, gameSurface, new SDL_Rect{ (int)position.x, (int)position.y, NULL, NULL });
