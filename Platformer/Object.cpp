@@ -1,59 +1,80 @@
 #include "Object.h"
 #include <stdio.h>
 
-bool Object::init(const char* resourcePath)
+bool Object::init(const char* resourcePath, SDL_Renderer* renderer)
 {
 	bool success = true;
 
-	sprite = SDL_LoadBMP(resourcePath);
+	SDL_Surface* load = IMG_Load(resourcePath);
 
-	if (sprite == NULL)
+	if (load == NULL)
 	{
-		printf("Unable to load image %s! Error! %s\n", resourcePath, SDL_GetError());
+		printf("Image failed to load! Error: %s\n", IMG_GetError());
 		success = false;
+	}
+	else
+	{
+		sprite = SDL_CreateTextureFromSurface(renderer, load);
+		if (sprite == NULL)
+		{
+			printf("Texture creation failed! Error: %s\n", SDL_GetError());
+			success = false;
+		}
+
+		SDL_FreeSurface(load);
 	}
 
 	return success;
 }
 
-bool Object::init(const char* resourcePath, Vector2f pos)
+bool Object::init(const char* resourcePath, Vector2f pos, SDL_Renderer* renderer)
 {
 	bool success = true;
 
-	sprite = SDL_LoadBMP(resourcePath);
+	SDL_Surface* load = IMG_Load(resourcePath);
 
-	if (sprite == NULL)
+	if (load == NULL)
 	{
-		printf("Unable to load image %s! Error! %s\n", resourcePath, SDL_GetError());
-		success = false;
-	}
-
-	position = pos;
-
-	if (position.x == NULL || position.y == NULL)
-	{
-		printf("Position vector is null!\n");
+		printf("Image failed to load! Error: %s\n", IMG_GetError());
 		success = false;
 	}
 	else
 	{
-		rect = new SDL_Rect{ (int)position.x, (int)position.y, NULL, NULL };
+		sprite = SDL_CreateTextureFromSurface(renderer, load);
+		if (sprite == NULL)
+		{
+			printf("Texture creation failed! Error: %s\n", SDL_GetError());
+			success = false;
+		}
+
+		SDL_FreeSurface(load);
 	}
 
+	position = pos;
+
+	SDL_QueryTexture(sprite, NULL, NULL, &width, &height);
+	rect = SDL_Rect{ (int)position.x, (int)position.y, width, height };
+
 	return success;
+}
+
+void Object::kill()
+{
+	SDL_DestroyTexture(sprite);
+	sprite = NULL;
 }
 
 void Object::move(Vector2f pos)
 {
 	position = pos;
 
-	if (position.x == NULL || position.y == NULL)
+	if (&position == nullptr)
 	{
 		printf("Position vector is null!\n");
 	}
 	else
 	{
-		rect = new SDL_Rect{ (int)position.x, (int)position.y, NULL, NULL };
+		rect = SDL_Rect{ (int)position.x, (int)position.y, width, height };
 	}
 }
 
@@ -62,12 +83,12 @@ Vector2f Object::getPosition()
 	return position;
 }
 
-void Object::draw(SDL_Surface* gameSurface)
+void Object::draw(SDL_Renderer* renderer)
 {
-	SDL_BlitSurface(sprite, NULL, gameSurface, new SDL_Rect{ (int)position.x, (int)position.y, NULL, NULL });
+	SDL_RenderCopy(renderer, sprite, new SDL_Rect{ 0,0,720,720 }, &rect);
 }
 
-void Object::draw(SDL_Surface* gameSurface, Vector2f pos)
+void Object::draw(SDL_Renderer* renderer, Vector2f pos)
 {
-	SDL_BlitSurface(sprite, NULL, gameSurface, new SDL_Rect{ (int)pos.x, (int)pos.y, NULL, NULL });
+	SDL_RenderCopy(renderer, sprite, NULL, new SDL_Rect{ (int)pos.x, (int)pos.y, width, height });
 }

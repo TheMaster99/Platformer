@@ -1,4 +1,5 @@
 #include <SDL.h>
+#include <SDL_image.h>
 #include <stdio.h>
 #include "Vector2f.h"
 #include "Object.h"
@@ -15,14 +16,14 @@ bool quit = false;
 SDL_Event e;
 
 SDL_Window* gWindow = NULL;
-SDL_Surface* gScreenSurface = NULL;
-SDL_Surface* gSplash = NULL;
+SDL_Renderer* gRenderer = NULL;
 
 Object splash;
 
 bool init()
 {
 	bool success = true;
+
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
@@ -39,7 +40,21 @@ bool init()
 		}
 		else
 		{
-			gScreenSurface = SDL_GetWindowSurface(gWindow);
+			gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
+			if (gRenderer == NULL)
+			{
+				printf("Renderer failed to initialize! Error: %s\n", SDL_GetError());
+			}
+			else
+			{
+				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+
+				int imgFlags = IMG_INIT_PNG;
+				if (!(IMG_Init(imgFlags) & imgFlags))
+				{
+					printf("SDL_Image could not intiialize! Error: %s\n", IMG_GetError());
+				}
+			}
 		}
 	}
 
@@ -52,20 +67,22 @@ bool loadMedia()
 
 	Vector2f splashPos = { 280, 0 };
 
-	splash.init("resources/splash.bmp", splashPos);
+	splash.init("resources/splash.png", splashPos, gRenderer);
 
 	return success;
 }
 
 void close()
 {
-	SDL_FreeSurface(gSplash);
-	gSplash = NULL;
+	splash.kill();
 
 	SDL_DestroyWindow(gWindow);
+	SDL_DestroyRenderer(gRenderer);
 	gWindow = NULL;
+	gRenderer = NULL;
 
 	SDL_Quit();
+	IMG_Quit();
 }
 
 int main(int argc, char* args[])
@@ -84,7 +101,7 @@ int main(int argc, char* args[])
 
 	while (!quit)
 	{
-		SDL_FillRect(gScreenSurface, NULL, 0x000000);
+		SDL_RenderClear(gRenderer);
 		while (SDL_PollEvent(&e) != 0)
 		{
 			if (e.type == SDL_QUIT)
@@ -113,11 +130,15 @@ int main(int argc, char* args[])
 					break;
 				}
 			}
+			else if (e.type == SDL_MOUSEMOTION)
+			{
+				
+			}
 		}
 
-		splash.draw(gScreenSurface);
+		splash.draw(gRenderer);
 
-		SDL_UpdateWindowSurface(gWindow);
+		SDL_RenderPresent(gRenderer);
 	}
 
 		close();
