@@ -68,14 +68,7 @@ void Object::move(Vector2f pos)
 {
 	position = pos;
 
-	if (&position == nullptr)
-	{
-		printf("Position vector is null!\n");
-	}
-	else
-	{
-		rect = SDL_Rect{ (int)position.x, (int)position.y, width, height };
-	}
+	rect = SDL_Rect{ (int)position.x, (int)position.y, width, height };
 }
 
 Vector2f Object::getPosition()
