@@ -20,19 +20,19 @@ SDL_Renderer* gRenderer = NULL;
 
 Object splash;
 
-bool init()
+bool init() // Initialize everything that will be required for SDL to run
 {
 	bool success = true;
 
 
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) // Initialize SDL
 	{
 		printf("SDL could not initialize! Error: %s\n", SDL_GetError());
 		success = false;
 	}
 	else
 	{
-		gWindow = SDL_CreateWindow("Platformer", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		gWindow = SDL_CreateWindow("Platformer", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN); // Create SDL window
 		if (gWindow == NULL)
 		{
 			printf("Window could not be created! Error: %s\n", SDL_GetError());
@@ -40,17 +40,17 @@ bool init()
 		}
 		else
 		{
-			gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
+			gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED); // Initialize SDL renderer
 			if (gRenderer == NULL)
 			{
 				printf("Renderer failed to initialize! Error: %s\n", SDL_GetError());
 			}
 			else
 			{
-				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF); // Set default render color to white
 
 				int imgFlags = IMG_INIT_PNG;
-				if (!(IMG_Init(imgFlags) & imgFlags))
+				if (!(IMG_Init(imgFlags) & imgFlags)) // Initialize image loading to handle .png images
 				{
 					printf("SDL_Image could not intiialize! Error: %s\n", IMG_GetError());
 				}
@@ -61,7 +61,7 @@ bool init()
 	return success;
 }
 
-bool loadMedia()
+bool loadMedia() // Load objects, images, etc. that will be used
 {
 	bool success = true;
 
@@ -72,7 +72,7 @@ bool loadMedia()
 	return success;
 }
 
-void close()
+void close() // Release objects, images, etc. from memory
 {
 	splash.kill();
 
@@ -87,26 +87,26 @@ void close()
 
 int main(int argc, char* args[])
 {
-	if (!init())
+	if (!init()) // Initialize
 	{
 		printf("Failed to intialize!\n");
 	}
 	else
 	{
-		if (!loadMedia())
+		if (!loadMedia()) // Load
 		{
 			printf("Failed to load media!\n");
 		}
 	}
 
-	while (!quit)
+	while (!quit) // Main game loop
 	{
-		SDL_RenderClear(gRenderer);
+		SDL_RenderClear(gRenderer); // Clear the previous frame from the renderer
 		while (SDL_PollEvent(&e) != 0)
 		{
-			if (e.type == SDL_QUIT)
+			if (e.type == SDL_QUIT) // User clicks exit button
 				quit = true;
-			else if (e.type == SDL_KEYDOWN)
+			else if (e.type == SDL_KEYDOWN) // User presses a key on the keyboard
 			{
 				switch (e.key.keysym.sym)
 				{
@@ -130,7 +130,7 @@ int main(int argc, char* args[])
 					break;
 				}
 			}
-			else if (e.type == SDL_MOUSEMOTION)
+			else if (e.type == SDL_MOUSEMOTION) // User moves the mouse
 			{
 				
 			}
@@ -138,10 +138,10 @@ int main(int argc, char* args[])
 
 		splash.draw(gRenderer);
 
-		SDL_RenderPresent(gRenderer);
+		SDL_RenderPresent(gRenderer); // Update window with the new frame
 	}
 
-		close();
+		close(); // Game loop has ended because bool quit is true
 
 		return 0;
 }
