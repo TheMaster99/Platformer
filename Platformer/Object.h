@@ -15,6 +15,9 @@ public:
 
 	Vector2f getPosition(); // Get position of the object
 
+	int getWidth(); // Get width of the image
+	int getHeight(); // Get height of the image
+
 	bool init(const char* resourcePath, SDL_Renderer* renderer); // Initialize object with no position, which defaults to ( 0, 0 )
 	bool init(const char* resourcePath, Vector2f pos, SDL_Renderer* renderer); // Initialize object with specified position
 

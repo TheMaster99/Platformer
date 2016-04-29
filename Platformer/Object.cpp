@@ -24,6 +24,9 @@ bool Object::init(const char* resourcePath, SDL_Renderer* renderer)
 		SDL_FreeSurface(load); // Free the temporary surface from memory
 	}
 
+	SDL_QueryTexture(sprite, NULL, NULL, &width, &height); // Get dimensions of the image
+	rect = SDL_Rect{ (int)position.x, (int)position.y, width, height }; // Create a rectangle to represent where the texture will be drawn onto the screen
+
 	return success;
 }
 
@@ -74,6 +77,16 @@ void Object::move(Vector2f pos)
 Vector2f Object::getPosition() // Get the position of the object
 {
 	return position;
+}
+
+int Object::getWidth() // Get width of the image
+{
+	return width;
+}
+
+int Object::getHeight() // Get height of the image
+{
+	return height;
 }
 
 void Object::draw(SDL_Renderer* renderer)

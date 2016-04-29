@@ -47,7 +47,7 @@ bool init() // Initialize everything that will be required for SDL to run
 			}
 			else
 			{
-				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF); // Set default render color to white
+				SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0); // Set default render color to black
 
 				int imgFlags = IMG_INIT_PNG;
 				if (!(IMG_Init(imgFlags) & imgFlags)) // Initialize image loading to handle .png images
@@ -65,9 +65,11 @@ bool loadMedia() // Load objects, images, etc. that will be used
 {
 	bool success = true;
 
-	Vector2f splashPos = { 280, 0 };
+	splash.init("resources/splash.png", gRenderer);
 
-	splash.init("resources/splash.png", splashPos, gRenderer);
+	Vector2f splashPos = { SCREEN_WIDTH / 2 - (float)splash.getWidth() / 2, 0 }; // Center the object in the window
+
+	splash.move(splashPos);
 
 	return success;
 }
@@ -114,10 +116,10 @@ int main(int argc, char* args[])
 					splash.move(Vector2f{ 0, 0 });
 					break;
 				case SDLK_SPACE:
-					splash.move(Vector2f{ SCREEN_WIDTH / 2 - 360, 0 });
+					splash.move(Vector2f{ SCREEN_WIDTH / 2 - (float)splash.getWidth()/2, 0 });
 					break;
 				case SDLK_s:
-					splash.move(Vector2f{ SCREEN_WIDTH - 720, 0 });
+					splash.move(Vector2f{ SCREEN_WIDTH - (float)splash.getWidth(), 0 });
 					break;
 				case SDLK_a:
 					splash.move(Vector2f{ splash.getPosition().x - 5, 0 });
