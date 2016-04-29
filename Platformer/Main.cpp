@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <SDL_image.h>
+#include <vector>
 #include <stdio.h>
 #include "Vector2f.h"
 #include "Object.h"
@@ -18,7 +19,7 @@ SDL_Event e;
 SDL_Window* gWindow = NULL;
 SDL_Renderer* gRenderer = NULL;
 
-Object splash;
+std::vector<Object> objects; // Array of objects
 
 bool init() // Initialize everything that will be required for SDL to run
 {
@@ -65,18 +66,28 @@ bool loadMedia() // Load objects, images, etc. that will be used
 {
 	bool success = true;
 
-	splash.init("resources/splash.png", gRenderer);
+	objects.push_back(Object()); // Add new object to array, then initialize the new object and set it's position
 
-	Vector2f splashPos = { SCREEN_WIDTH / 2 - (float)splash.getWidth() / 2, 0 }; // Center the object in the window
+	objects.at(0).init("resources/splash.png", gRenderer);
 
-	splash.move(splashPos);
+	Vector2f splashPos = Vector2f{ SCREEN_WIDTH / 2 - (float)objects.at(0).getWidth() / 2, 0 };
+
+	objects.at(0).move(splashPos);
+
+	objects.push_back(Object());
+
+	objects.at(1).init("resources/splash.png", gRenderer);
+	objects.at(1).move(Vector2f{ 0, 0 });
 
 	return success;
 }
 
 void close() // Release objects, images, etc. from memory
 {
-	splash.kill();
+	for (Object o : objects) // Iterate through all objects
+	{
+		o.kill(); // Kill each object
+	}
 
 	SDL_DestroyWindow(gWindow);
 	SDL_DestroyRenderer(gRenderer);
@@ -113,19 +124,19 @@ int main(int argc, char* args[])
 				switch (e.key.keysym.sym)
 				{
 				case SDLK_w:
-					splash.move(Vector2f{ 0, 0 });
+					objects.at(0).move(Vector2f{ 0, 0 });
 					break;
 				case SDLK_SPACE:
-					splash.move(Vector2f{ SCREEN_WIDTH / 2 - (float)splash.getWidth()/2, 0 });
+					objects.at(0).move(Vector2f{ SCREEN_WIDTH / 2 - (float)objects.at(0).getWidth()/2, 0 });
 					break;
 				case SDLK_s:
-					splash.move(Vector2f{ SCREEN_WIDTH - (float)splash.getWidth(), 0 });
+					objects.at(0).move(Vector2f{ SCREEN_WIDTH - (float)objects.at(0).getWidth(), 0 });
 					break;
 				case SDLK_a:
-					splash.move(Vector2f{ splash.getPosition().x - 5, 0 });
+					objects.at(0).move(Vector2f{ objects.at(0).getPosition().x - 5, 0 });
 					break;
 				case SDLK_d:
-					splash.move(Vector2f{ splash.getPosition().x + 5, 0 });
+					objects.at(0).move(Vector2f{ objects.at(0).getPosition().x + 5, 0 });
 					break;
 				case SDLK_ESCAPE:
 					quit = true;
@@ -138,7 +149,10 @@ int main(int argc, char* args[])
 			}
 		}
 
-		splash.draw(gRenderer);
+		for (Object o : objects)
+		{
+			o.draw(gRenderer);
+		}
 
 		SDL_RenderPresent(gRenderer); // Update window with the new frame
 	}
